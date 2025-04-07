@@ -10,7 +10,16 @@ const pokemonImages = {
   Charizard: "https://img.pokemondb.net/artwork/charizard.jpg",
   Squirtle: "https://img.pokemondb.net/artwork/squirtle.jpg",
   Wartortle: "https://img.pokemondb.net/artwork/wartortle.jpg",
-  Blastoise: "https://img.pokemondb.net/artwork/blastoise.jpg"
+  Blastoise: "https://img.pokemondb.net/artwork/blastoise.jpg",
+  Chikorita: "https://img.pokemondb.net/artwork/chikorita.jpg",
+  Bayleef: "https://img.pokemondb.net/artwork/bayleef.jpg",
+  Meganium: "https://img.pokemondb.net/artwork/meganium.jpg",
+  Cyndaquil: "https://img.pokemondb.net/artwork/cyndaquil.jpg",
+  Quilava: "https://img.pokemondb.net/artwork/quilava.jpg",
+  Typhlosion: "https://img.pokemondb.net/artwork/typhlosion.jpg",
+  Totodile: "https://img.pokemondb.net/artwork/totodile.jpg",
+  Croconaw: "https://img.pokemondb.net/artwork/croconaw.jpg",
+  Feraligatr: "https://img.pokemondb.net/artwork/feraligatr.jpg"
 };
 
 const PokemonCard = ({ user, pokemon, level, xp, nextLevelXP, isMaxed, onClick }) => {
