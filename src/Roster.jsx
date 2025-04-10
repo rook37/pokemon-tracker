@@ -61,7 +61,7 @@ const MAX_LEVEL = 60;
 export default function Roster() {
   const [users, setUsers] = useState([]);
   const [xpTable, setXpTable] = useState([]);
-  const [sortOption, setSortOption] = useState("level");
+  const [sortOption, setSortOption] = useState("username");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -228,8 +228,8 @@ export default function Roster() {
           onChange={e => setSortOption(e.target.value)}
           className="border px-3 py-2 rounded"
         >
-          <option value="level">Level</option>
           <option value="username">Username</option>
+          <option value="level">Level</option>
           <option value="weekXP">Weekly XP</option>
         </select>
         <input
