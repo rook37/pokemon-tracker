@@ -220,7 +220,7 @@ export default function Roster() {
 
   return (
     <div className="p-6">
-      <div className="flex flex-wrap gap-4 items-center mb-6">
+      <div className="flex flex-wrap gap-4 items-center justify-center mb-6">
         <label htmlFor="sort" className="text-lg font-semibold">Sort by:</label>
         <select
           id="sort"
