@@ -26,24 +26,81 @@ const PokemonCard = ({ user, pokemon, level, xp, nextLevelXP, isMaxed, onClick }
   const percent = isMaxed ? 100 : Math.floor((xp / nextLevelXP) * 100);
   const imageUrl = pokemonImages[pokemon] || pokemonImages["Egg"];
 
+  const badgeIcons = {
+    Week1: 'https://image.pngaaa.com/482/1224482-middle.png',
+    Week2: 'https://static.wikia.nocookie.net/pokemeow/images/7/70/Cascade_badge.png',
+    Week3: '/badges/week3.svg',
+    Week4: '/badges/week4.svg',
+    Week5: '/badges/week5.svg',
+  };
+
+  const currWeek = 2;
+  const weekSlots = [
+    { week: "1", side: "left", position: "top" },
+    { week: "2", side: "right", position: "top" },
+    { week: "3", side: "left", position: "middle" },
+    { week: "4", side: "right", position: "middle" },
+    { week: "5", side: "left", position: "bottom" },
+  ];
+
+  const badgePositions = weekSlots.filter(
+    (slot) => parseInt(slot.week) < currWeek && user.badges.includes(slot.week)
+  );
+
+  const renderBadge = (badge) => (
+    <span key={`${badge.side}-${badge.week}`} className="w-6 h-6">
+      <img
+        src={badgeIcons[`Week${badge.week}`]}
+        alt={`Week ${badge.week} badge`}
+        className="w-full h-full object-contain"
+      />
+    </span>
+  );
+
+  const renderBadgeColumn = (side) =>
+    ["top", "middle", "bottom"].map((pos) => {
+      const badge = badgePositions.find(
+        (b) => b.side === side && b.position === pos
+      );
+      return badge ? (
+        renderBadge(badge)
+      ) : (
+        <span key={`${side}-placeholder-${pos}`} className="h-6 w-6" />
+      );
+    });
+
   return (
     <div
       className="border rounded-2xl shadow p-4 bg-white w-64 cursor-pointer hover:shadow-lg transition"
       onClick={onClick}
     >
       <div className="text-center">
-        <h2 className="text-xl font-bold mb-2">{user}</h2>
+          <h2 className="text-xl font-bold mb-2">{user.name || user}</h2>
+          <div className="relative flex justify-center mb-2">
         <img
           src={imageUrl}
           alt={pokemon}
-          className="w-32 h-32 object-contain mx-auto mb-2"
-        />
-        <p className="text-lg">Pokémon: {pokemon}</p>
-        <p className="text-md">Level: {level}</p>
+              className="w-32 h-32 object-contain mx-auto"
+            />
+            {badgePositions.length > 0 && (
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="flex justify-between h-full px-1 py-2">
+                  <div className="flex flex-col justify-between h-full">
+                    {renderBadgeColumn("left")}
+                  </div>
+                  <div className="flex flex-col justify-between h-full items-end">
+                    {renderBadgeColumn("right")}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+          <p className="text-lg font-medium">Pokémon: {pokemon}</p>
+          <p className="text-md text-gray-800">Level {level}</p>
         <div className="mt-2">
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
-              className="bg-blue-600 h-2.5 rounded-full"
+                className="bg-blue-600 h-2.5 rounded-full transition-all"
               style={{ width: `${percent}%` }}
             ></div>
           </div>
@@ -110,6 +167,25 @@ export default function Roster() {
       const xpIdx = header.indexOf("Total XP");
       const weekXPIdx = header.indexOf("Weekly XP");
       const pokemonIdx = header.indexOf("Pokemon");
+      const weekIdx = header.indexOf("Week");
+  
+      
+      const weeklyRows = {};
+      for (let i = 9; i < rows.length; i++) {
+        const row = rows[i];
+        const week = row[weekIdx];
+        if (!weeklyRows[week]) weeklyRows[week] = [];
+        weeklyRows[week].push(row);
+      }
+  
+     
+      const weeklyTop10 = {};
+      for (const [week, entries] of Object.entries(weeklyRows)) {
+        const sorted = [...entries].sort((a, b) => {
+          return Number(b[weekXPIdx] || 0) - Number(a[weekXPIdx] || 0);
+        });
+        weeklyTop10[week] = sorted.slice(0, 10).map(row => row[nameIdx]);
+      }
 
       const statIndices = {
         steps: header.indexOf("Steps"),
@@ -140,6 +216,7 @@ export default function Roster() {
       for (let i = rows.length - 1; i > 8; i--) {
         const row = rows[i];
         const name = row[nameIdx];
+        const thisWeek = row[weekIdx];
         if (!name || seen.has(name)) continue;
 
         const totalXP = Number(row[xpIdx] || 0);
@@ -160,6 +237,11 @@ export default function Roster() {
 
         const pokemon = row[pokemonIdx] || "Egg";
 
+       
+        const badges = Object.entries(weeklyTop10)
+          .filter(([week, topUsers]) => topUsers.includes(name))
+          .map(([week]) => week);
+  
         latest.push({
           name,
           pokemon,
@@ -169,6 +251,7 @@ export default function Roster() {
           numericLevel: level,
           nextLevelXP,
           isMaxed,
+          badges,
           stats: {
             steps: row[statIndices.steps] || 0,
             minutes: row[statIndices.minutes] || 0,
@@ -248,7 +331,7 @@ export default function Roster() {
         {paginatedUsers.map(user => (
           <PokemonCard
             key={user.name}
-            user={user.name}
+          user={user} 
             pokemon={user.pokemon}
             level={user.level > MAX_LEVEL ? "MEGA" : user.level}
             xp={user.totalXP}
@@ -278,7 +361,7 @@ export default function Roster() {
           <div className="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full relative">
             <button
               onClick={() => setSelectedUser(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+              className="absolute top-2 right-2 text-gray-500 hover:text-black text-xl sm:text-2xl"
             >
               ✕
             </button>
