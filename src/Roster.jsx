@@ -118,7 +118,7 @@ const MAX_LEVEL = 60;
 export default function Roster() {
   const [users, setUsers] = useState([]);
   const [xpTable, setXpTable] = useState([]);
-  const [sortOption, setSortOption] = useState("username");
+  const [sortOption, setSortOption] = useState("level");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
