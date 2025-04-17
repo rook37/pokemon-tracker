@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 const pokemonImages = {
-  Egg: "https://archives.bulbagarden.net/media/upload/1/1e/Spr_6x_Egg.png",
+  Egg: "https://i.imgur.com/H42miYd.png",
   Bulbasaur: "https://img.pokemondb.net/artwork/bulbasaur.jpg",
   Ivysaur: "https://img.pokemondb.net/artwork/ivysaur.jpg",
   Venusaur: "https://img.pokemondb.net/artwork/venusaur.jpg",
