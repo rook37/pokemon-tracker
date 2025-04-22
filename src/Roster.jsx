@@ -157,36 +157,18 @@ export default function Roster() {
       ]);
       const trackerData = await trackerRes.json();
       const starterData = await starterRes.json();
-
+    
       const rows = trackerData?.values;
       const starters = starterData?.values;
       if (!rows || rows.length <= 9 || !starters || starters.length < 2) return;
-
+    
       const header = rows[8];
       const nameIdx = header.indexOf("Trainer");
       const xpIdx = header.indexOf("Total XP");
       const weekXPIdx = header.indexOf("Weekly XP");
       const pokemonIdx = header.indexOf("Pokemon");
       const weekIdx = header.indexOf("Week");
-  
-      
-      const weeklyRows = {};
-      for (let i = 9; i < rows.length; i++) {
-        const row = rows[i];
-        const week = row[weekIdx];
-        if (!weeklyRows[week]) weeklyRows[week] = [];
-        weeklyRows[week].push(row);
-      }
-  
-     
-      const weeklyTop10 = {};
-      for (const [week, entries] of Object.entries(weeklyRows)) {
-        const sorted = [...entries].sort((a, b) => {
-          return Number(b[weekXPIdx] || 0) - Number(a[weekXPIdx] || 0);
-        });
-        weeklyTop10[week] = sorted.slice(0, 10).map(row => row[nameIdx]);
-      }
-
+    
       const statIndices = {
         steps: header.indexOf("Steps"),
         minutes: header.indexOf("Minutes"),
@@ -209,19 +191,42 @@ export default function Roster() {
         totalBingoXP: header.indexOf("total bingo xp"),
         totalMWFXP: header.indexOf("total mwf xp")
       };
-
-      const seen = new Set();
-      const latest = [];
-
+    
+      const weeklyRows = {};
+      for (let i = 9; i < rows.length; i++) {
+        const row = rows[i];
+        const week = row[weekIdx];
+        if (!weeklyRows[week]) weeklyRows[week] = [];
+        weeklyRows[week].push(row);
+      }
+    
+      const weeklyTop10 = {};
+      for (const [week, entries] of Object.entries(weeklyRows)) {
+        const sorted = [...entries].sort((a, b) => {
+          return Number(b[weekXPIdx] || 0) - Number(a[weekXPIdx] || 0);
+        });
+        weeklyTop10[week] = sorted.slice(0, 10).map(row => row[nameIdx]);
+      }
+    
+      const userMap = new Map();
       for (let i = rows.length - 1; i > 8; i--) {
         const row = rows[i];
         const name = row[nameIdx];
-        const thisWeek = row[weekIdx];
-        if (!name || seen.has(name)) continue;
-
-        const totalXP = Number(row[xpIdx] || 0);
-        const weekXP = Number(row[weekXPIdx] || 0);
-
+        if (!name) continue;
+    
+        if (!userMap.has(name)) {
+          userMap.set(name, { current: row, previous: null });
+        } else if (!userMap.get(name).previous) {
+          userMap.get(name).previous = row;
+        }
+      }
+    
+      const latest = [];
+    
+      for (const [name, { current, previous }] of userMap.entries()) {
+        const totalXP = Number(current[xpIdx] || 0);
+        const weekXP = Number(current[weekXPIdx] || 0);
+    
         let level = 1;
         for (let j = xpTable.length - 1; j >= 0; j--) {
           if (totalXP >= xpTable[j].xp) {
@@ -229,19 +234,41 @@ export default function Roster() {
             break;
           }
         }
-
+    
         const isMaxed = level >= MAX_LEVEL;
         const nextLevelXP = isMaxed
           ? xpTable.find(e => e.level === MAX_LEVEL)?.xp || 0
           : xpTable.find(l => l.level === level + 1)?.xp || totalXP;
-
-        const pokemon = row[pokemonIdx] || "Egg";
-
-       
+    
+        const pokemon = current[pokemonIdx] || "Egg";
+    
         const badges = Object.entries(weeklyTop10)
           .filter(([week, topUsers]) => topUsers.includes(name))
           .map(([week]) => week);
-  
+    
+        const extractStats = (row) => row ? {
+          steps: row[statIndices.steps] || 0,
+          minutes: row[statIndices.minutes] || 0,
+          yoga: row[statIndices.yoga] || 0,
+          bingo: row[statIndices.bingo] || 0,
+          challenges: row[statIndices.challenges] || 0,
+          stepsXP: row[statIndices.stepsXP] || 0,
+          minutesXP: row[statIndices.minutesXP] || 0,
+          yogaXP: row[statIndices.yogaXP] || 0,
+          bingoXP: row[statIndices.bingoXP] || 0,
+          challengesXP: row[statIndices.challengesXP] || 0,
+          totalSteps: row[statIndices.totalSteps] || 0,
+          totalMin: row[statIndices.totalMin] || 0,
+          totalYoga: row[statIndices.totalYoga] || 0,
+          totalBingo: row[statIndices.totalBingo] || 0,
+          totalMWF: row[statIndices.totalMWF] || 0,
+          totalStepsXP: row[statIndices.totalStepsXP] || 0,
+          totalMinXP: row[statIndices.totalMinXP] || 0,
+          totalYogaXP: row[statIndices.totalYogaXP] || 0,
+          totalBingoXP: row[statIndices.totalBingoXP] || 0,
+          totalMWFXP: row[statIndices.totalMWFXP] || 0
+        } : null;
+    
         latest.push({
           name,
           pokemon,
@@ -252,34 +279,14 @@ export default function Roster() {
           nextLevelXP,
           isMaxed,
           badges,
-          stats: {
-            steps: row[statIndices.steps] || 0,
-            minutes: row[statIndices.minutes] || 0,
-            yoga: row[statIndices.yoga] || 0,
-            bingo: row[statIndices.bingo] || 0,
-            challenges: row[statIndices.challenges] || 0,
-            stepsXP: row[statIndices.stepsXP] || 0,
-            minutesXP: row[statIndices.minutesXP] || 0,
-            yogaXP: row[statIndices.yogaXP] || 0,
-            bingoXP: row[statIndices.bingoXP] || 0,
-            challengesXP: row[statIndices.challengesXP] || 0,
-            totalSteps: row[statIndices.totalSteps] || 0,
-            totalMin: row[statIndices.totalMin] || 0,
-            totalYoga: row[statIndices.totalYoga] || 0,
-            totalBingo: row[statIndices.totalBingo] || 0,
-            totalMWF: row[statIndices.totalMWF] || 0,
-            totalStepsXP: row[statIndices.totalStepsXP] || 0,
-            totalMinXP: row[statIndices.totalMinXP] || 0,
-            totalYogaXP: row[statIndices.totalYogaXP] || 0,
-            totalBingoXP: row[statIndices.totalBingoXP] || 0,
-            totalMWFXP: row[statIndices.totalMWFXP] || 0
-          }
+          stats: extractStats(current),
+          lastWeekStats: extractStats(previous)
         });
-
-        seen.add(name);
       }
+    
       setUsers(latest);
     };
+    
 
     fetchUsers();
   }, [xpTable]);
