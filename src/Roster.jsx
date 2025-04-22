@@ -34,7 +34,7 @@ const PokemonCard = ({ user, pokemon, level, xp, nextLevelXP, isMaxed, onClick }
     Week5: '/badges/week5.svg',
   };
 
-  const currWeek = 2;
+  const currWeek = 3;
   const weekSlots = [
     { week: "1", side: "left", position: "top" },
     { week: "2", side: "right", position: "top" },
