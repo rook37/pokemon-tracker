@@ -377,14 +377,6 @@ export default function Roster() {
             <p className="text-md">Weekly XP: {selectedUser.weekXP}</p>
 
             <div className="mt-4 space-y-2">
-              <p className="font-semibold text-lg">Last week's stats:</p>
-              <p>+ {selectedUser.stats.stepsXP} XP ({selectedUser.stats.steps} steps)</p>
-              <p>+ {selectedUser.stats.minutesXP} XP ({selectedUser.stats.minutes} minutes)</p>
-              <p>+ {selectedUser.stats.yogaXP} XP ({selectedUser.stats.yoga} yoga sessions)</p>
-              <p>+ {selectedUser.stats.bingoXP} XP ({selectedUser.stats.bingo} bingo)</p>
-              <p>+ {selectedUser.stats.challengesXP} XP ({selectedUser.stats.challenges} challenges)</p>
-              <p className="font-semibold">Total: {selectedUser.weekXP} XP</p>
-
               <p className="font-semibold text-lg mt-4">Total stats:</p>
               <p>{selectedUser.stats.totalSteps} steps ({selectedUser.stats.totalStepsXP} XP)</p>
               <p>{selectedUser.stats.totalMin} minutes ({selectedUser.stats.totalMinXP} XP)</p>
