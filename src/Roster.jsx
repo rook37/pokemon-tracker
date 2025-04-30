@@ -29,12 +29,12 @@ const PokemonCard = ({ user, pokemon, level, xp, nextLevelXP, isMaxed, onClick }
   const badgeIcons = {
     Week1: 'https://image.pngaaa.com/482/1224482-middle.png',
     Week2: 'https://static.wikia.nocookie.net/pokemeow/images/7/70/Cascade_badge.png',
-    Week3: '/badges/week3.svg',
+    Week3: 'https://archives.bulbagarden.net/media/upload/thumb/a/a6/Thunder_Badge.png/1024px-Thunder_Badge.png',
     Week4: '/badges/week4.svg',
     Week5: '/badges/week5.svg',
   };
 
-  const currWeek = 3;
+  const currWeek = 4;
   const weekSlots = [
     { week: "1", side: "left", position: "top" },
     { week: "2", side: "right", position: "top" },
