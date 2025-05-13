@@ -3,6 +3,7 @@ import pewter from './assets/pewter.png'
 import cascade from './assets/Cascade_badge.png'
 import thunder from './assets/thunder.png'
 import rainbow from './assets/rainbow.png'
+import soul from './assets/soul.png'
 
 const pokemonImages = {
   Egg: "https://i.imgur.com/H42miYd.png",
@@ -35,10 +36,10 @@ const PokemonCard = ({ user, pokemon, level, xp, nextLevelXP, isMaxed, onClick }
     Week2: cascade,
     Week3: thunder,
     Week4: rainbow,
-    Week5: '/badges/week5.svg',
+    Week5: soul,
   };
 
-  const currWeek = 5;
+  const currWeek = 6;
   const weekSlots = [
     { week: "1", side: "left", position: "top" },
     { week: "2", side: "right", position: "top" },
